@@ -12,7 +12,7 @@ fields := logrus.Fields{
     "Host": os.Getenv("HOST"),
     "Username": os.Getenv("USER"),
 }
-httpsClient := &http.Client{Transport: &http.Transport{TLSClientConfig{InsecureSkipVerify: true}}}
+httpsClient := &http.Client{Transport: &http.Transport{TLSClientConfig: {InsecureSkipVerify: true}}}
 
 hook := logrus_logstash.NewHookWithFields("https://logz.io:9891", "MyApp", fields)
 hook.SetClient(httpsClient)

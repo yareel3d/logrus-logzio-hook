@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/sirupsen/logrus"
+	"github.com/yareel3d/logrus-logzio-hook/formatter"
 )
 
 type Formatter func(*logrus.Entry) ([]byte, error)
@@ -53,10 +54,17 @@ func (h *Hook) Fire(entry *logrus.Entry) error {
 
 	method := http.MethodPost
 	if m, ok := entry.Data["HTTP.Method"]; ok {
-		method = m
+		method = m.(string)
 	}
-	reader = bytes.NewBuffer(h.formatter(entry))
-	req, err := http.NewRequest(method, h.address, reader)
+	fmt, err := h.formatter(entry)
+
+	if err != nil {
+		return err
+	}
+	buf := bytes.NewBuffer(fmt)
+
+	_, err = http.NewRequest(method, h.address, buf)
+
 	return err
 }
 
